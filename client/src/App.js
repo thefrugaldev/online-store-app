@@ -6,12 +6,52 @@ import {ApolloProvider, ApolloClient, InMemoryCache} from '@apollo/client';
 import {ProductsList} from './screens/ProductsList';
 import {ProductDetails} from './screens/ProductDetails';
 import {GRAPHQL_URL} from './config';
+import {FAVORITE_PRODUCT_FRAGMENT} from './graphql/requests';
 
 const Stack = createStackNavigator();
 
 const client = new ApolloClient({
   uri: GRAPHQL_URL,
-  cache: new InMemoryCache(),
+  cache: new InMemoryCache({
+    typePolicies: {
+      Product: {
+        fields: {
+          favorite: {
+            read(favorite = false) {
+              return favorite;
+            },
+          },
+          //Defaults to read method
+          price(price) {
+            return `$${price}`;
+          },
+        },
+      },
+    },
+  }),
+  resolvers: {
+    Mutation: {
+      addOrRemoveProductFromFavorite(_root, args, {client, cache}) {
+        const productId = cache.identify({
+          __typename: 'Product',
+          id: args.productId,
+        });
+
+        const {favorite} = client.readFragment({
+          fragment: FAVORITE_PRODUCT_FRAGMENT,
+          id: productId,
+        });
+
+        client.writeFragment({
+          fragment: FAVORITE_PRODUCT_FRAGMENT,
+          id: productId,
+          data: {
+            favorite: !favorite,
+          },
+        });
+      },
+    },
+  },
 });
 
 export default function() {
