@@ -19,7 +19,11 @@ export function ProductsList({navigation}) {
     return (
       <Product
         product={product}
-        onPress={() => navigation.navigate('ProductDetails')}
+        onPress={() =>
+          navigation.navigate('ProductDetails', {
+            productId: product.id,
+          })
+        }
       />
     );
   }
