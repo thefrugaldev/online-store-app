@@ -34,7 +34,7 @@ export function ProductDetails({route}) {
     fetchPolicy: 'cache-and-network',
   });
 
-  if (productLoading) return <Loading />;
+  if (productLoading) return <Loading hasBackground />;
   if (productError) return <Error error={error} />;
 
   const renderComment = ({item: comment}) => {

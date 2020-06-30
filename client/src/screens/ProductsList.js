@@ -12,7 +12,7 @@ export function ProductsList({navigation}) {
     fetchPolicy: 'cache-and-network',
   });
 
-  if (loading) return <Loading />;
+  if (loading) return <Loading hasBackground />;
   if (error) return <Error error={error} />;
 
   function renderProduct({item: product}) {

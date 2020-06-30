@@ -77,6 +77,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: 'row',
+    marginBottom: 8,
   },
   input: {
     flex: 1,
