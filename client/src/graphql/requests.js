@@ -1,23 +1,34 @@
 const {gql} = require('@apollo/client');
 
+//FRAGMENTS
+export const FAVORITE_PRODUCT_FRAGMENT = gql`
+  fragment FavoriteProductFragment on Product {
+    favorite
+  }
+`;
+
+export const PRODUCT_FRAGMENT = gql`
+  fragment ProductFragment on Product {
+    id
+    name
+    price
+    description
+    favorite @client
+    thumb {
+      id
+      url
+    }
+  }
+`;
+
+//QUERIES
 export const GET_ALL_PRODUCTS = gql`
   {
     products {
-      id
-      name
-      price
-      description
-      favorite @client
-      thumb {
-        id
-        url
-      }
-      comments {
-        id
-        comment
-      }
+      ...ProductFragment
     }
   }
+  ${PRODUCT_FRAGMENT}
 `;
 
 export const GET_FAVORITE_PRODUCTS_COUNT = gql`
@@ -26,30 +37,38 @@ export const GET_FAVORITE_PRODUCTS_COUNT = gql`
   }
 `;
 
-export const GET_PRODUCT_DETAILS = gql`
+export const GET_PRODUCT = gql`
   query GetProduct($productId: ID!) {
     product(id: $productId) {
+      ...ProductFragment
+    }
+  }
+  ${PRODUCT_FRAGMENT}
+`;
+
+export const GET_COMMENTS_BY_PRODUCT = gql`
+  query GetCommentsByProduct($productId: ID!) {
+    comments(sort: "id:desc", where: {product: {id: $productId}}) {
       id
-      name
-      price
-      description
-      favorite @client
-      thumb {
-        id
-        url
-      }
+      comment
     }
   }
 `;
 
+//MUTATIONS
 export const ADD_OR_REMOVE_PRODUCT_FROM_FAVORITE = gql`
   mutation AddOrRemoveProductFromFavorite($productId: ID!) {
     addOrRemoveProductFromFavorite(productId: $productId) @client
   }
 `;
 
-export const FAVORITE_PRODUCT_FRAGMENT = gql`
-  fragment FavoriteProductFragment on Product {
-    favorite
+export const CREATE_COMMENT = gql`
+  mutation CreateComment($comment: String!, $productId: ID!) {
+    createComment(input: {data: {comment: $comment, product: $productId}}) {
+      comment {
+        id
+        comment
+      }
+    }
   }
 `;
